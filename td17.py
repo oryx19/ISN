@@ -157,7 +157,7 @@ def prochain_evaluation(c,di):
         date = ajouter_jours(date,1)
     evaluation = es[0]
     while evaluation[6] != "EV":
-        es = liste_evenements(calendrier, date, ajouter_jours(date,1))
+        es = liste_evenements(c, date, ajouter_jours(date,1))
         for e in es:
             if e[6] == "EV" :
                 if evaluation[6]!="EV":
@@ -270,10 +270,11 @@ while saisir != -1:
     print("« -1 » pour arreter")
     saisir = input("Saisir: ")
     if saisir == "s":
-        affiche_evenements_semain(liste_jours(ajouter_jours(date,-7)),semaine_evenements(calendrier,ajouter_jours(date,-7)))
-    elif saisir == "p":
         date = ajouter_jours(date,7)
-        affiche_evenements_semain(liste_jours(ajouter_jours(date,7)),semaine_evenements(calendrier,ajouter_jours(date,7)))
+        affiche_evenements_semain(liste_jours(date),semaine_evenements(calendrier,date))
+    elif saisir == "p":
+        date = ajouter_jours(date,-7)
+        affiche_evenements_semain(liste_jours(date),semaine_evenements(calendrier,date))
     else:
         saisir = -1
 print("---------")
