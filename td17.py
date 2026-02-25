@@ -134,12 +134,12 @@ def semaine_evenements(c,di):
         - (list de list) : liste de liste des evenements
     """
     semaine = liste_jours(di)
-    semaine_evenements = []
+    evenements = []
     for i in range(7):
         temp = liste_evenements(c,semaine[i],semaine[i+1])
         trie_evenements(temp)
-        semaine_evenements.append(temp)
-    return semaine_evenements
+        evenements.append(temp)
+    return evenements
 
 def prochain_evaluation(c,di):
     """Renovie la prochaine evaluation
@@ -157,7 +157,7 @@ def prochain_evaluation(c,di):
         date = ajouter_jours(date,1)
     evaluation = es[0]
     while evaluation[6] != "EV":
-        es = liste_evenements(c, date, ajouter_jours(date,1))
+        es = liste_evenements(calendrier, date, ajouter_jours(date,1))
         for e in es:
             if e[6] == "EV" :
                 if evaluation[6]!="EV":
@@ -214,11 +214,23 @@ def affiche_evenements_semain(semaine,semaine_evenements):
             print(f"# {jour_semaine(semaine[i])} {semaine[i][2]:02d}/{semaine[i][1]:02d}/{semaine[i][0]:04d}")
             print("#####")
             for evenement in semaine_evenements[i]:
-                h_deb, m_deb = heure_vers_int(float(evenement[3]))
-                h_fin, m_fin = heure_vers_int(float(evenement[4]))
+                h_deb, m_deb = heure_vers_int(float(evenement[3].replace(',', '.')))
+                h_fin, m_fin = heure_vers_int(float(evenement[4].replace(',', '.')))
                 print(f"# - de {h_deb:02d}h{m_deb:02d} à {h_fin:02d}h{m_fin:02d} : {evenement[5]}")
 
-
+def chercher_index(liste, nom):
+    """Renvoie l'index de nom dans la liste
+    Entrée :
+        - liste (list de str)
+        - nom (str)
+    Sortie :
+        - (int)
+    """
+    index = 0
+    for i in range(len(liste)):
+        if liste[i] == nom:
+            index = i
+    return index
 
 
 ###########
@@ -257,14 +269,14 @@ def heure_vers_int(h):
     return heure_int, minutes_int
 
 # Programme general
-calendrier = creer_calendrier('/Users/dinhngoc/Downloads/project_isn/Calendrier ISN 2.csv')
+calendrier = creer_calendrier('/Users/dinhngoc/Downloads/Calendrier ISN 2.csv')
 today = aujourdhui()
 print("---------")
 # Programme principal tache 1
 date = today
 affiche_evenements_semain(liste_jours(date),semaine_evenements(calendrier,date))
-saisir = 0
-while saisir != -1:
+saisir = ""
+while saisir != "-1":
     print("« s » pour « semaine Suivante »")
     print("« p » pour « semaine Précédente »")
     print("« -1 » pour arreter")
@@ -275,8 +287,6 @@ while saisir != -1:
     elif saisir == "p":
         date = ajouter_jours(date,-7)
         affiche_evenements_semain(liste_jours(date),semaine_evenements(calendrier,date))
-    else:
-        saisir = -1
 print("---------")
 # Programme principal tache 2
 date = today
@@ -305,3 +315,37 @@ while est_avant(date, date_fin):
     evaluation = prochain_evaluation(calendrier,date_evaluation_fin ) 
 
 # Programme principal tache bonus 2
+matiere = []
+profcm = []
+proftd = []
+cm = []
+td = []
+tp = []
+ev = []
+for e in calendrier:
+    if e[6] != "":
+        if e[5] not in matiere:
+            matiere.append(e[5])
+            cm.append(0.0)
+            td.append(0.0)
+            tp.append(0.0)
+            ev.append(0.0)
+            profcm.append("N/A")
+            proftd.append("N/A")
+        duree = float(e[4].replace(',', '.')) - float(e[3].replace(',', '.'))
+        index = chercher_index(matiere,e[5])
+        if e[6] == "CM":
+            cm[index] += duree
+            if e[7] != "":
+                profcm[index] = e[7]
+        elif e[6] == "TD":
+            td[index] += duree
+            if e[7] != "":
+                proftd[index] = e[7]
+        elif e[6] == "TP":
+            tp[index] += duree
+        elif e[6] == "EV":
+            ev[index] += duree
+
+for i in range(len(matiere)):
+    print(f"{matiere[i]}: {cm[i]}h de CM avec {profcm[i]}, {td[i]}h de TD avec {proftd[i]}, {tp[i]}h de TP, {ev[i]}h d’évaluation")
