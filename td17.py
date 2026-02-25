@@ -151,10 +151,11 @@ def prochain_evaluation(c,di):
     """
     date = di
     evaluation = []
-    while evaluation == []:
-        es = liste_evenements(c, date, ajouter_jours(date,1))
-        evaluation = es[0]
+    es = []
+    while es == []:
+        es = liste_evenements(c, date, ajouter_jours(date,1))        
         date = ajouter_jours(date,1)
+    evaluation = es[0]
     while evaluation[6] != "EV":
         es = liste_evenements(calendrier, date, ajouter_jours(date,1))
         for e in es:
